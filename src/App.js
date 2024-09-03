@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://65.21.255.215/tic-tac-toe/api/game';
+
 /**
  * Tic-Tac-Toe Game component
  * Manages the game state, handles user moves, and interacts with the backend API.
@@ -14,7 +16,7 @@ function App() {
 
     // Fetch the initial game state from the backend when the component mounts
     useEffect(() => {
-        axios.get('http://65.21.255.215/tic-tac-toe/api/game')
+        axios.get(`${API_URL}`)
             .then(response => {
                 setBoard(response.data.board);
                 setScore(response.data.score);
@@ -32,23 +34,23 @@ function App() {
      * @param {number} y - The y coordinate on the board
      */
     const handleMove = (x, y) => {
-        axios.post(`http://65.21.255.215/tic-tac-toe/api/game/${currentTurn}`, { x, y })
-            .then(response => {
-                setBoard(response.data.board);
-                setScore(response.data.score);
-                setCurrentTurn(response.data.currentTurn);
-                setVictory(response.data.victory);
-            })
-            .catch(error => {
-                alert(error.response.data.error || 'An error occurred.');
-            });
+        axios.post(`${API_URL}/${currentTurn}`, { x, y })
+        .then(response => {
+            setBoard(response.data.board);
+            setScore(response.data.score);
+            setCurrentTurn(response.data.currentTurn);
+            setVictory(response.data.victory);
+        })
+        .catch(error => {
+            alert(error.response.data.error);
+        });
     };
 
     /**
      * Restarts the game by calling the restart API endpoint.
      */
     const handleRestart = () => {
-        axios.post('http://65.21.255.215/tic-tac-toe/api/game/restart')
+        axios.post(`${API_URL}/restart`)
             .then(response => {
                 setBoard(response.data.board);
                 setScore(response.data.score);
@@ -64,7 +66,7 @@ function App() {
      * Resets the game and scores by calling the reset API endpoint.
      */
     const handleReset = () => {
-        axios.delete('http://65.21.255.215/tic-tac-toe/api/game')
+        axios.delete(`${API_URL}`)
             .then(response => {
                 setBoard([['', '', ''], ['', '', ''], ['', '', '']]);
                 setScore({ x: 0, o: 0 });
