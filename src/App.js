@@ -13,6 +13,7 @@ function App() {
     const [score, setScore] = useState({ x: 0, o: 0 });
     const [currentTurn, setCurrentTurn] = useState('x');
     const [victory, setVictory] = useState('');
+    const [showOverlay, setShowOverlay] = useState(false);
 
     // Fetch the initial game state from the backend when the component mounts
     useEffect(() => {
@@ -22,6 +23,9 @@ function App() {
                 setScore(response.data.score);
                 setCurrentTurn(response.data.currentTurn);
                 setVictory(response.data.victory);
+                if (response.data.victory) {
+                    setShowOverlay(true);
+                }
             })
             .catch(error => {
                 console.error('Error fetching game state:', error);
@@ -40,6 +44,9 @@ function App() {
             setScore(response.data.score);
             setCurrentTurn(response.data.currentTurn);
             setVictory(response.data.victory);
+            if (response.data.victory) {
+                setShowOverlay(true);
+            }
         })
         .catch(error => {
             alert(error.response.data.error);
@@ -56,6 +63,7 @@ function App() {
                 setScore(response.data.score);
                 setCurrentTurn(response.data.currentTurn);
                 setVictory(response.data.victory);
+                setShowOverlay(false);
             })
             .catch(error => {
                 console.error('Error restarting the game:', error);
@@ -72,6 +80,7 @@ function App() {
                 setScore({ x: 0, o: 0 });
                 setCurrentTurn(response.data.currentTurn);
                 setVictory('');
+                setShowOverlay(false);
             })
             .catch(error => {
                 console.error('Error resetting the game:', error);
@@ -109,6 +118,15 @@ function App() {
             </div>
             <button onClick={handleRestart}>Restart Game</button>
             <button onClick={handleReset}>Reset All</button>
+
+            {showOverlay && (
+                <div className="overlay">
+                    <div className="overlay-content">
+                        <h2>{victory.toUpperCase()} Wins!</h2>
+                        <button onClick={() => setShowOverlay(false)}>Close</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
